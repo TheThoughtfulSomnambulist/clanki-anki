@@ -1,4 +1,7 @@
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
+use std::collections::HashMap;
+use crate::load_data::{Deck, FrontEndCard};
+
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
@@ -17,6 +20,9 @@ impl Default for TemplateApp {
             value: 2.7,
         }
     }
+}
+pub struct MyApp {
+    pub decks: HashMap<String, Deck>,
 }
 
 impl TemplateApp {
@@ -85,12 +91,12 @@ impl eframe::App for TemplateApp {
                 egui::Layout::centered_and_justified(egui::Direction::TopDown),
                 |ui| {
                     ui.label(
-                                    egui::RichText::new("THIS IS CLANKI! Using the eframe template.")
-                                        .size(50.0)
-                                        .color(egui::Color32::RED)
-                                        .strong()
+                        egui::RichText::new("THIS IS CLANKI! Using the eframe template.")
+                            .size(50.0)
+                            .color(egui::Color32::RED)
+                            .strong(),
                     )
-                }
+                },
             );
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
