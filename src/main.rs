@@ -22,7 +22,6 @@ async fn main() -> eframe::Result {
             ),
         ..Default::default()
     };
-    let decks = clanki::load_data::load_deck_data();
     eframe::run_native(
         "eframe template",
         native_options,

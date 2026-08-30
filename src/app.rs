@@ -1,13 +1,14 @@
+use crate::load_data::Deck;
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 use std::collections::HashMap;
-use crate::load_data::{Deck, FlashCard};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
     #[serde(skip)]
     decks: HashMap<String, Deck>,
-    selected_deck: Option<String>
+    selected_deck: String,
+    deck_selected: bool,
 }
 
 impl Default for TemplateApp {
@@ -15,12 +16,11 @@ impl Default for TemplateApp {
         let decks = crate::load_data::load_deck_data();
         Self {
             decks,
-            selected_deck: None,
+            selected_deck: "Jeff".to_string(),
+            deck_selected: false,
         }
     }
-    
 }
-
 
 impl TemplateApp {
     /// Called once before the first frame.
@@ -70,23 +70,24 @@ impl eframe::App for TemplateApp {
 
         egui::CentralPanel::default().show(ui, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            match self.selected_deck.clone() {
+            match self.deck_selected {
                 // No deck chosen yet: show the picker.
-                None => {
+                false => {
                     ui.heading("Pick a deck");
                     ui.separator();
                     for name in self.decks.keys() {
                         if ui.button(name).clicked() {
-                            self.selected_deck = Some(name.clone());
+                            self.selected_deck = name.clone();
+                            self.deck_selected = true;
                         }
                     }
                 }
                 // A deck is chosen: show its screen.
-                Some(name) => {
-                    ui.heading(&name);
+                true => {
+                    ui.heading(&self.selected_deck.clone());
                     ui.separator();
                     if ui.button("⬅ Back to decks").clicked() {
-                        self.selected_deck = None;
+                        self.deck_selected = false;
                     }
                 }
             }
