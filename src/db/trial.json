@@ -1,0 +1,14 @@
+[
+    {
+        "id": "global_minimiser",
+        "question": "x~ is a _ if f(x~)≤f(x) for all x in the entire domain of the function.",
+        "answer": "global_minimiser",
+        "difficulty": 20
+    },
+    {
+        "id": "strict_minimiser",
+        "question": "What distinguishes a 'strict' local minimiser from a standard local minimiser?",
+        "answer": "The function value at the minimiser is strictly less than at any other distinct point in its neighbourhood.",
+        "difficulty": 20
+    }
+]
