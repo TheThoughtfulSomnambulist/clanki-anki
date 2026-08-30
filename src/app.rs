@@ -5,25 +5,22 @@ use crate::load_data::{Deck, FrontEndCard};
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
-    // Example stuff:
-    label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    #[serde(skip)]
+    decks: HashMap<String, Deck>,
+    selected_deck: Option<String>
 }
 
 impl Default for TemplateApp {
     fn default() -> Self {
+        let decks = crate::load_data::load_deck_data();
         Self {
-            // Example stuff:
-            label: "Hello World!".to_owned(),
-            value: 2.7,
+            decks,
+            selected_deck: None,
         }
     }
+    
 }
-pub struct MyApp {
-    pub decks: HashMap<String, Deck>,
-}
+
 
 impl TemplateApp {
     /// Called once before the first frame.
@@ -73,31 +70,26 @@ impl eframe::App for TemplateApp {
 
         egui::CentralPanel::default().show(ui, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
-
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(&mut self.label);
-            });
-
-            ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-            if ui.button("Increment").clicked() {
-                self.value += 1.0;
+            match self.selected_deck.clone() {
+                // No deck chosen yet: show the picker.
+                None => {
+                    ui.heading("Pick a deck");
+                    ui.separator();
+                    for name in self.decks.keys() {
+                        if ui.button(name).clicked() {
+                            self.selected_deck = Some(name.clone());
+                        }
+                    }
+                }
+                // A deck is chosen: show its screen.
+                Some(name) => {
+                    ui.heading(&name);
+                    ui.separator();
+                    if ui.button("⬅ Back to decks").clicked() {
+                        self.selected_deck = None;
+                    }
+                }
             }
-
-            ui.separator();
-
-            ui.with_layout(
-                egui::Layout::centered_and_justified(egui::Direction::TopDown),
-                |ui| {
-                    ui.label(
-                        egui::RichText::new("THIS IS CLANKI! Using the eframe template.")
-                            .size(50.0)
-                            .color(egui::Color32::RED)
-                            .strong(),
-                    )
-                },
-            );
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 powered_by_egui_and_eframe(ui);
