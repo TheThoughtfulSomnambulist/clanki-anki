@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use include_dir::{include_dir, Dir};
 
 #[derive(Deserialize, Debug)]
-pub struct FrontEndCard {
+pub struct FlashCard {
     id: String,
     question: String,
     answer: String,
@@ -11,7 +11,7 @@ pub struct FrontEndCard {
 }
 #[derive(Debug)]
 pub struct Deck {
-    cards: Vec<FrontEndCard>,
+    cards: Vec<FlashCard>,
 }
 
 // temp for now
@@ -31,7 +31,7 @@ pub fn load_deck_data() -> HashMap<String, Deck> {
             .to_string();
         let json_data = file.contents_utf8().unwrap();
 
-        let cards: Vec<FrontEndCard> = serde_json::from_str(&json_data).expect("Failed to parse desk JSON");
+        let cards: Vec<FlashCard> = serde_json::from_str(&json_data).expect("Failed to parse desk JSON");
         let deck = Deck { cards };
 
         decks.insert(filename, deck);
